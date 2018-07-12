@@ -33,7 +33,12 @@ class Server {
         });
 
         if (hasRoute) {
-            this.Modules.router[request.method][findRoute](request, response, matched);
+            try {
+                this.Modules.router[request.method][findRoute](request, response, matched);
+            } catch (error){
+                console.error(error);
+                response.error(500, error.message);
+            }
         } else {
             request.addListener('end', function () {
                 response.error(404, 'Not Found');
