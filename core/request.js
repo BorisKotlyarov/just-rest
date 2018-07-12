@@ -1,10 +1,5 @@
 const requestPrototype = {
 
-    get test () {
-        console.log(this);
-        return 'sdfsdfsdfsdfsdf';
-    },
-
     get body () {
 
         return new Promise((resolve, reject) => {

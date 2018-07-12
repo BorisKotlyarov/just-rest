@@ -1,13 +1,13 @@
-let http                        = require('http');
-const URL                       = require('url');
-const setRequest                = require('./request');
-const setResponse               = require('./response');
+let http = require('http');
+const URL = require('url');
+const setRequest = require('./request');
+const setResponse = require('./response');
 
 class Server {
 
     constructor({Modules, port}) {
-        this.Modules    = Modules;
-        this.port       = port;
+        this.Modules = Modules;
+        this.port = port;
         this.serve();
     }
 
@@ -15,34 +15,34 @@ class Server {
 
         setRequest(request);
         setResponse(response);
-        let urlParse        = URL.parse(request.url);
-        let router          = this.Modules.router[request.method];
-        let hasRoute        = false;
-        let findRoute       = '/';
-        let matched         = null;
+        let urlParse = URL.parse(request.url);
+        let router = this.Modules.router[request.method];
+        let hasRoute = false;
+        let findRoute = '/';
+        let matched = null;
 
-        Object.keys(router).forEach((path)=>{
+        Object.keys(router).forEach((path) => {
             let regExp = new RegExp(`^${path}$`);
 
-            if(urlParse.pathname.match(regExp)){
-                hasRoute    = true;
-                findRoute   = path;
-                matched     = urlParse.pathname.match(regExp);
+            if (urlParse.pathname.match(regExp)) {
+                hasRoute = true;
+                findRoute = path;
+                matched = urlParse.pathname.match(regExp);
             }
 
         });
 
-        if(hasRoute) {
+        if (hasRoute) {
             this.Modules.router[request.method][findRoute](request, response, matched);
         } else {
             request.addListener('end', function () {
-                response.resp({error: '404'});
+                response.error(404, 'Not Found');
             }).resume();
         }
 
     }
 
-    serve(){
+    serve() {
         http.createServer(this.app.bind(this)).listen(this.port);
         console.log(`server listening on http://localhost:${this.port}, Ctrl+C to stop`);
     }

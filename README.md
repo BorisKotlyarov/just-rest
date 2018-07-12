@@ -28,9 +28,9 @@ sample REST server
     ```javascript
     const {Modules, Server} = require('just-rest');
     
-    Modules.define('./modules/process-info/index.js');
+    Modules.define(__dirmane + './modules/process-info/index.js');
     
-    new Server({Modules, port: 3001});
+    new Server({Modules, port: 3002});
     ```
     Run app
-3) Open url `http://localhost:3001/process-info`
+3) Open url `http://localhost:3002/process-info`
