@@ -1,0 +1,23 @@
+{
+  "name": "just-rest",
+  "version": "0.0.1-alpha",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BorisKotlyarov/just-rest.git"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {},
+  "keywords": [
+    "REST"
+  ],
+  "bugs": {
+    "url": "https://github.com/BorisKotlyarov/just-rest/issues"
+  },
+  "homepage": "https://github.com/BorisKotlyarov/just-rest#readme",
+  "author": "Boris Kotlyarov",
+  "license": "ISC"
+
+}
