@@ -20,7 +20,7 @@ module.exports = function (response) {
     response.error = function (statusCode, customMessage = '') {
         let message = customMessage;
 
-        if ('' != customMessage) {
+        if ('' == customMessage) {
             let http = require('http');
             message = http.STATUS_CODES[statusCode];
         }
