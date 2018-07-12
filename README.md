@@ -12,8 +12,14 @@ sample REST server
             '/process-info': function(request, response){
                 response.resp(process.env);
             }
-        }
-    
+        },
+     
+        POST: {
+            '/process-info': async function(request, response){
+                let body = await request.body;
+                response.resp(body);
+            }
+        }, 
     };
     ```
     save module as `./modules/process-info/index.js`
