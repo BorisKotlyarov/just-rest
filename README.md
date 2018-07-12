@@ -9,9 +9,26 @@ sample REST server
     module.exports = {
     
         GET: {
-            '/process-info': function(request, response){
-                response.resp(process.env);
-            }
+           '/process-info': function(request, response){
+               //http://localhost:3002/process-info
+               response.resp(process.env);
+           },
+           
+           '/process-info/([0-9]{1,})': function(request, response, matched){
+               //http://localhost:3002/process-info/1234
+               response.resp(matched);
+           },
+           
+           '/process-info/error': function(request, response){
+               //http://localhost:3002/process-info/error
+               throw new Error('Internal Server Error');
+               response.resp(matched);
+           },
+           
+           '/process-info/error-401': function(request, response){
+               //http://localhost:3002/process-info/error-401
+               response.error(401);
+           }
         },
      
         POST: {
