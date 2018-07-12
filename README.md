@@ -28,7 +28,7 @@ sample REST server
     ```javascript
     const {Modules, Server} = require('just-rest');
     
-    Modules.define(__dirmane + './modules/process-info/index.js');
+    Modules.define(__dirmane + '/modules/process-info/index.js');
     
     new Server({Modules, port: 3002});
     ```
