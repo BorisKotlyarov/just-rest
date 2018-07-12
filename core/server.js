@@ -12,13 +12,28 @@ class Server {
     }
 
     app(request, response) {
-        
+
         setRequest(request);
         setResponse(response);
-        let urlParse  = URL.parse(request.url);
+        let urlParse        = URL.parse(request.url);
+        let router          = this.Modules.router[request.method];
+        let hasRoute        = false;
+        let findRoute       = '/';
+        let matched         = null;
 
-        if(this.Modules.router[request.method].hasOwnProperty(urlParse.pathname)) {
-            this.Modules.router[request.method][urlParse.pathname](request, response);
+        Object.keys(router).forEach((path)=>{
+            let regExp = new RegExp(`^${path}$`);
+
+            if(urlParse.pathname.match(regExp)){
+                hasRoute    = true;
+                findRoute   = path;
+                matched     = urlParse.pathname.match(regExp);
+            }
+
+        });
+
+        if(hasRoute) {
+            this.Modules.router[request.method][findRoute](request, response, matched);
         } else {
             request.addListener('end', function () {
                 response.resp({error: '404'});

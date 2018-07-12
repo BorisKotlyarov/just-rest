@@ -1,5 +1,6 @@
 # Just Rest #
 sample REST server
+[Example app](https://github.com/BorisKotlyarov/just-rest-example)
 
 ## Use
 
