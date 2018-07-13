@@ -1,24 +1,36 @@
 class Modules {
 
     constructor() {
-        this.router = {
+
+        let defaultProperties = [
+            { variableName: 'router', defineFunctionName: 'define'},
+            { variableName: 'requestInterceptors', defineFunctionName: 'defineRequestInterceptor'},
+            { variableName: 'responseInterceptors', defineFunctionName: 'defineResponseInterceptor'},
+        ];
+
+        let defaultValues = {
             GET: {},
             POST: {},
             PUT: {},
             DELETE: {},
             OPTIONS: {}
         };
-    }
 
-    define(modulePath) {
+        defaultProperties.forEach((property)=>{
+            this[property.variableName] = JSON.parse(JSON.stringify(defaultValues));
 
-        let module = require(modulePath);
+            this[property.defineFunctionName] = (modulePath) => {
 
-        Object.keys(this.router).forEach((key) => {
-            if (module.hasOwnProperty(key)) {
-                this.router[key] = Object.assign(this.router[key], module[key]);
+                let module = require(modulePath);
+
+                Object.keys(this[property.variableName]).forEach((key) => {
+                    if (module.hasOwnProperty(key)) {
+                        this[property.variableName][key] = Object.assign(this[property.variableName][key], module[key]);
+                    }
+                });
             }
         });
+
     }
 
 };

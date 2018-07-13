@@ -53,4 +53,9 @@ module.exports = function(request){
     Object.getOwnPropertyNames(requestPrototype).forEach(function(propertyName){
         Object.defineProperty(request.__proto__, propertyName, Object.getOwnPropertyDescriptor(requestPrototype, propertyName));
     });
+
+    request._interceptors.forEach((interceptor)=>{
+        interceptor(request)
+    });
+
 };

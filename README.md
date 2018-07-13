@@ -22,7 +22,7 @@ sample REST server
            '/process-info/error': function(request, response){
                //http://localhost:3002/process-info/error
                throw new Error('Internal Server Error');
-               response.resp(matched);
+               response.resp({});
            },
            
            '/process-info/error-401': function(request, response){
@@ -41,10 +41,32 @@ sample REST server
     ```
     save module as `./modules/process-info/index.js`
 
-2) Connect the module in your app
+2) Make interceptor
+    ```javascript
+    module.exports = {
+        GET: {
+            '/(.+?)': function(response){
+    
+                const CorsAllowHeaders = {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Set-Cookies, Access-Token'
+                };
+    
+                Object.keys(CorsAllowHeaders).forEach((item) => {
+                    response.setHeader(item, CorsAllowHeaders[item]);
+                });
+            }
+        }
+    };
+    ```
+    save interceptor as `./interceptors/response/corsAllowHeaders.js`
+
+2) Connect modules and interceptors to your app
     ```javascript
     const {Modules, Server} = require('just-rest');
     
+    Modules.defineResponseInterceptor(__dirname + '/interceptors/response/corsAllowHeaders.js');
     Modules.define(__dirmane + '/modules/process-info/index.js');
     
     new Server({Modules, port: 3002});

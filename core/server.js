@@ -13,10 +13,13 @@ class Server {
 
     app(request, response) {
 
-        setRequest(request);
-        setResponse(response);
+        request._interceptors = [];
+        response._interceptors = [];
+
         let urlParse = URL.parse(request.url);
         let router = this.Modules.router[request.method];
+        let requestInterceptors = this.Modules.requestInterceptors[request.method];
+        let responseInterceptors = this.Modules.responseInterceptors[request.method];
         let hasRoute = false;
         let findRoute = '/';
         let matched = null;
@@ -32,10 +35,27 @@ class Server {
 
         });
 
+        Object.keys(requestInterceptors).forEach((path) => {
+            let regExp = new RegExp(`^${path}$`);
+            if (urlParse.pathname.match(regExp)) {
+                request._interceptors.push(requestInterceptors[path]);
+            }
+        });
+
+        Object.keys(responseInterceptors).forEach((path) => {
+            let regExp = new RegExp(`^${path}$`);
+            if (urlParse.pathname.match(regExp)) {
+                response._interceptors.push(responseInterceptors[path]);
+            }
+        });
+
+        setRequest(request);
+        setResponse(response);
+
         if (hasRoute) {
             try {
                 this.Modules.router[request.method][findRoute](request, response, matched);
-            } catch (error){
+            } catch (error) {
                 console.error(error);
                 response.error(500, error.message);
             }
