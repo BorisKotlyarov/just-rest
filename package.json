@@ -1,7 +1,7 @@
 {
   "name": "just-rest",
-  "version": "0.0.6-alpha",
-  "description": "",
+  "version": "0.0.7-alpha",
+  "description": "Simple REST server.",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,7 +11,8 @@
   "devDependencies": {},
   "scripts": {},
   "keywords": [
-    "REST"
+    "REST",
+    "JSON"
   ],
   "bugs": {
     "url": "https://github.com/BorisKotlyarov/just-rest/issues"

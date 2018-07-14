@@ -27,6 +27,9 @@ class Modules {
                     if (module.hasOwnProperty(key)) {
                         this[property.variableName][key] = Object.assign(this[property.variableName][key], module[key]);
                     }
+                    if (module.hasOwnProperty('ANY')){
+                        this[property.variableName][key] = Object.assign(this[property.variableName][key], module['ANY']);
+                    }
                 });
             }
         });

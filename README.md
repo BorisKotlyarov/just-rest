@@ -1,6 +1,12 @@
-# Just Rest #
-sample REST server
-[Example app](https://github.com/BorisKotlyarov/just-rest-example)
+# Just REST #
+«Just REST» is the NPM package that will help you make simple REST server.
+See [Example app](https://github.com/BorisKotlyarov/just-rest-example)
+
+## Install
+
+```bash 
+npm i just-rest
+```
 
 ## Use
 
@@ -44,7 +50,7 @@ sample REST server
 2) Make interceptor
     ```javascript
     module.exports = {
-        GET: {
+        ANY: { //All supported request types «GET, POST, PUT, DELETE, OPTIONS»
             '/(.+?)': function(response){
     
                 const CorsAllowHeaders = {
