@@ -19,9 +19,17 @@ class Modules {
         defaultProperties.forEach((property)=>{
             this[property.variableName] = JSON.parse(JSON.stringify(defaultValues));
 
-            this[property.defineFunctionName] = (modulePath) => {
+            this[property.defineFunctionName] = (mod) => {
 
-                let module = require(modulePath);
+                let module = {};
+                switch (typeof mod){
+                    case 'object':
+                        module = mod;
+                        break;
+
+                    default:
+                        module = require.main.require(mod);
+                }
 
                 Object.keys(this[property.variableName]).forEach((key) => {
                     if (module.hasOwnProperty(key)) {

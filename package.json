@@ -1,6 +1,6 @@
 {
   "name": "just-rest",
-  "version": "0.0.7-alpha",
+  "version": "0.0.8-alpha",
   "description": "Simple REST server.",
   "main": "index.js",
   "repository": {

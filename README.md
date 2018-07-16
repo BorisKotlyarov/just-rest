@@ -50,7 +50,7 @@ npm i just-rest
 2) Make interceptor
     ```javascript
     module.exports = {
-        ANY: { //All supported request types «GET, POST, PUT, DELETE, OPTIONS»
+        ANY: { //All supported methods «GET, POST, PUT, DELETE, OPTIONS»
             '/(.+?)': function(response){
     
                 const CorsAllowHeaders = {
@@ -72,8 +72,8 @@ npm i just-rest
     ```javascript
     const {Modules, Server} = require('just-rest');
     
-    Modules.defineResponseInterceptor(__dirname + '/interceptors/response/corsAllowHeaders.js');
-    Modules.define(__dirmane + '/modules/process-info/index.js');
+    Modules.defineResponseInterceptor('./interceptors/response/corsAllowHeaders.js');
+    Modules.define('./modules/process-info/index.js');
     
     new Server({Modules, port: 3002});
     ```
