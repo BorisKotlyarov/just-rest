@@ -2,13 +2,13 @@
 «Just REST» is the NPM package that will help you make simple REST server.
 See [Example app](https://github.com/BorisKotlyarov/just-rest-example)
 
-## Install
+## Install ##
 
 ```bash 
 npm i just-rest
 ```
 
-## Use
+## Use ##
 
 1) Make module
     ```javascript
@@ -79,3 +79,44 @@ npm i just-rest
     ```
     Run app
 3) Open url `http://localhost:3002/process-info`
+
+## Props ##
+
+Props is any variable 
+
+### Make props ##
+```javascript
+    const {Modules, Server} = require('just-rest');
+    
+    Modules.define('./modules/use-props/index.js');
+   
+    let props = {
+        test: '123456qwerty',
+        date: new Date(),
+        func: function(){
+            console.log(`cool`)
+        }
+    };
+    
+    new Server({Modules, port: 3002, props });
+```
+
+### Use props ###
+
+make file: `./modules/use-props/index.js`
+```javascript
+module.exports = {
+
+    GET: {
+       '/use-props': function(request, response){
+           //http://localhost:3002/use-props
+           
+           this.props.func();
+           console.log(this.props.date);
+           console.log(this.props.test);
+           
+           response.resp({});
+       }
+    }
+};
+```

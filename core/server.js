@@ -5,10 +5,13 @@ const setResponse = require('./response');
 
 class Server {
 
-    constructor({Modules, port}) {
+    constructor({Modules, port, props={}, autoStart = true}) {
         this.Modules = Modules;
         this.port = port;
-        this.serve();
+        this.props = props;
+        if(autoStart){
+            this.listen();
+        }
     }
 
     app(request, response) {
@@ -54,7 +57,7 @@ class Server {
 
         if (hasRoute) {
             try {
-                this.Modules.router[request.method][findRoute](request, response, matched);
+                this.Modules.router[request.method][findRoute].call(this, request, response, matched)
             } catch (error) {
                 console.error(error);
                 response.error(500, error.message);
@@ -67,7 +70,7 @@ class Server {
 
     }
 
-    serve() {
+    listen() {
         http.createServer(this.app.bind(this)).listen(this.port);
         console.log(`server listening on http://localhost:${this.port}, Ctrl+C to stop`);
     }
