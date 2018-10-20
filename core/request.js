@@ -1,3 +1,5 @@
+
+
 const requestPrototype = {
 
     get body () {
@@ -36,8 +38,12 @@ const requestPrototype = {
                 });
         });
 
+    },
+    get query () {
+        let url = require('url');
+        let url_parts = url.parse(this.url, true);
+        return url_parts.query
     }
-
 };
 
 function JSONBodyParser(body, messageRequest) {
