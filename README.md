@@ -51,7 +51,7 @@ npm i just-rest
     ```javascript
     module.exports = {
         ANY: { //All supported methods «GET, POST, PUT, DELETE, OPTIONS»
-            '/(.+?)': function(response){
+            '(.+?)': function(response){
     
                 const CorsAllowHeaders = {
                     'Access-Control-Allow-Origin': '*',
