@@ -5,16 +5,16 @@ const setResponse = require('./response');
 
 class Server {
 
-    constructor({Modules, port, props={}, autoStart = true}) {
+    constructor({Modules, port, props = {}, autoStart = true}) {
         this.Modules = Modules;
         this.port = port;
         this.props = props;
-        if(autoStart){
+        if (autoStart) {
             this.listen();
         }
     }
 
-    app(request, response) {
+    async app(request, response) {
 
         request._interceptors = [];
         response._interceptors = [];
@@ -28,7 +28,7 @@ class Server {
         let matched = null;
 
         Object.keys(router).forEach((path) => {
-            let regExp = new RegExp(`^${path}$`);
+            let regExp = new RegExp(`^${path}(/)?$`, 'i');
 
             if (urlParse.pathname.match(regExp)) {
                 hasRoute = true;
@@ -39,28 +39,27 @@ class Server {
         });
 
         Object.keys(requestInterceptors).forEach((path) => {
-            let regExp = new RegExp(`^${path}$`);
+            let regExp = new RegExp(`^${path}(/)?$`, 'i');
             if (urlParse.pathname.match(regExp)) {
                 request._interceptors.push(requestInterceptors[path]);
             }
         });
 
         Object.keys(responseInterceptors).forEach((path) => {
-            let regExp = new RegExp(`^${path}$`);
+            let regExp = new RegExp(`^${path}(\/)?$`, 'i');
             if (urlParse.pathname.match(regExp)) {
                 response._interceptors.push(responseInterceptors[path]);
             }
         });
 
-        setRequest(request);
-        setResponse(response);
+        await setRequest(this, request, response, matched);
+        await setResponse(this, request, response, matched);
 
         if (hasRoute) {
             try {
                 this.Modules.router[request.method][findRoute].call(this, request, response, matched)
             } catch (error) {
-                console.error(error);
-                response.error(500, error.message);
+                response.error(error.statusCode || 500, error.message);
             }
         } else {
             request.addListener('end', function () {

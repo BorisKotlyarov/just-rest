@@ -3,9 +3,9 @@ class Modules {
     constructor() {
 
         let defaultProperties = [
-            { variableName: 'router', defineFunctionName: 'define'},
-            { variableName: 'requestInterceptors', defineFunctionName: 'defineRequestInterceptor'},
-            { variableName: 'responseInterceptors', defineFunctionName: 'defineResponseInterceptor'},
+            {variableName: 'router', defineFunctionName: 'define'},
+            {variableName: 'requestInterceptors', defineFunctionName: 'defineRequestInterceptor'},
+            {variableName: 'responseInterceptors', defineFunctionName: 'defineResponseInterceptor'},
         ];
 
         let defaultValues = {
@@ -16,13 +16,13 @@ class Modules {
             OPTIONS: {}
         };
 
-        defaultProperties.forEach((property)=>{
+        defaultProperties.forEach((property) => {
             this[property.variableName] = JSON.parse(JSON.stringify(defaultValues));
 
             this[property.defineFunctionName] = (mod) => {
 
                 let module = {};
-                switch (typeof mod){
+                switch (typeof mod) {
                     case 'object':
                         module = mod;
                         break;
@@ -35,7 +35,7 @@ class Modules {
                     if (module.hasOwnProperty(key)) {
                         this[property.variableName][key] = Object.assign(this[property.variableName][key], module[key]);
                     }
-                    if (module.hasOwnProperty('ANY')){
+                    if (module.hasOwnProperty('ANY')) {
                         this[property.variableName][key] = Object.assign(this[property.variableName][key], module['ANY']);
                     }
                 });

@@ -1,15 +1,20 @@
-module.exports = function (response) {
+const takeTurns = require('./utils/takeTurns');
+
+module.exports = function (instance, request, response, matched) {
 
     response.resp = function (data) {
 
-        response._interceptors.forEach((interceptor)=>{
-            interceptor(response)
+        return takeTurns({
+            turn: response._interceptors,
+            args: [request, response, matched, data],
+            instance
+        }).then(() => {
+            return response.end(JSON.stringify(data));
         });
 
-        response.end(JSON.stringify(data));
     };
 
-    response.error = function (statusCode, customMessage = '') {
+    response.error = function (statusCode = 500, customMessage = '') {
         let message = customMessage;
 
         if ('' == customMessage) {

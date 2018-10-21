@@ -1,7 +1,4 @@
-const Modules                   = require('./core/modules');
-const Server                    = require('./core/server');
+exports.Modules = require('./core/modules');
+exports.Server = require('./core/server');
+exports.Errors = require('./core/Errors');
 
-module.exports = {
-    Modules,
-    Server
-};
