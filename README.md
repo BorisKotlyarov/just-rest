@@ -1,6 +1,18 @@
 # Just REST #
 «Just REST» is the NPM package that will help you make simple REST server.
-See [Example app](https://github.com/BorisKotlyarov/just-rest-example)
+
+## Table of contents ##
+- [Install](#install)
+- [Use](#use)
+- [Props](#props)
+    - [Use props](#use-props)
+    - [Make props](#make-props)
+- [Examples](#examples)
+    - [Example app](https://github.com/BorisKotlyarov/just-rest-example)
+    - [Example interceptor (external module)](https://github.com/BorisKotlyarov/just-rest-cookies)
+    - [Interceptor with middleware](#interceptor-with-middleware)
+    - [Set url path](#set-url-path)
+
 
 ## Install ##
 
@@ -117,6 +129,126 @@ module.exports = {
            
            response.resp({});
        }
+    }
+};
+```
+
+## Examples ##
+
+### Interceptor with middleware ###
+
+Make file with code
+
+```javascript
+const {Errors} = require('just-rest');
+
+module.exports = {
+
+    ANY: {
+        '(.+?)': async function (request, response, match) {
+            let instance = this;
+
+            //TODO get data from real database
+
+            instance.user = {
+                username: 'Guest',
+                permissions: [],
+                isAuthorized: false
+            };
+
+            let testDatabase = {
+                'token1': {
+                    username: 'Boris',
+                    permissions: ['all'],
+                    isAuthorized: true
+                },
+                'token2': {
+                    username: 'User 2',
+                    permissions: ['read.me'],
+                    isAuthorized: true
+                },
+                'token3': {
+                    username: 'User 3',
+                    permissions: ['read.something'],
+                    isAuthorized: true
+                },
+            }
+
+            if (request.headers.token && testDatabase.hasOwnProperty(request.headers.token)) {
+                instance.user = testDatabase[request.headers.token];
+            }
+
+            /*
+                Example middleware making.
+            */
+            this.checkAuth = ()=> {
+                if (!instance.user.isAuthorized) {
+                    throw  new Errors(401)
+                }
+
+                if (!instance.user.permissions.includes('read.me') && !instance.user.permissions.includes('all')) {
+                    throw  new Errors(403)
+                }
+            };
+
+            return;
+        }
+    }
+
+};
+```
+
+Include code to your server
+
+```javascript
+const {Modules, Server} = require('just-rest');
+
+Modules.defineRequestInterceptor('./interceptors/request/auth.js');
+
+new Server({Modules, port: 3002 });
+```
+
+Use middleware in your module 
+```javascript
+module.exports = {
+    GET: {
+        '/profile/me': function (request, response) {
+            /*
+                Using middleware.               
+            */
+            this.checkAuth();
+
+            response.resp(this.user);
+        }
+    }
+};
+```
+
+### Set url path ###
+
+Static url path
+```javascript
+module.exports = {
+    GET: {
+        '/your-url-path-here': function (request, response) {
+            //http://localhost:3002/your-url-path-here
+            response.resp({success: 'ok'});
+        }
+    }
+};
+```
+
+"Just Rest" supports RegExp expressions.
+Dynamics url path using RegExp
+```javascript
+module.exports = {
+    GET: {
+        //([0-9]{1,}) = Any number 
+        '/user/([0-9]{1,})': function (request, response, matched) {
+            //http://localhost:3002/user/1
+            let userId = matched[1];
+            response.resp({userId});
+        }
     }
 };
 ```
