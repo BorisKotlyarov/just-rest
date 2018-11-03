@@ -10,7 +10,7 @@
 - [Examples](#examples)
     - [Example app](https://github.com/BorisKotlyarov/just-rest-example)
     - [Example interceptor (external module)](https://github.com/BorisKotlyarov/just-rest-cookies)
-    - [Interceptor with middleware](#interceptor-with-middleware)
+    - [Use middleware](#middleware)
     - [Set url path](#set-url-path)
 
 
@@ -135,93 +135,78 @@ module.exports = {
 
 ## Examples ##
 
-### Interceptor with middleware ###
-
-Make file with code
-
-```javascript
-const {Errors} = require('just-rest');
-
-module.exports = {
-
-    ANY: {
-        '(.+?)': async function (request, response, match) {
-            let instance = this;
-
-            //TODO get data from real database
-
-            instance.user = {
-                username: 'Guest',
-                permissions: [],
-                isAuthorized: false
-            };
-
-            let testDatabase = {
-                'token1': {
-                    username: 'Boris',
-                    permissions: ['all'],
-                    isAuthorized: true
-                },
-                'token2': {
-                    username: 'User 2',
-                    permissions: ['read.me'],
-                    isAuthorized: true
-                },
-                'token3': {
-                    username: 'User 3',
-                    permissions: ['read.something'],
-                    isAuthorized: true
-                },
-            }
-
-            if (request.headers.token && testDatabase.hasOwnProperty(request.headers.token)) {
-                instance.user = testDatabase[request.headers.token];
-            }
-
-            /*
-                Example middleware making.
-            */
-            this.checkAuth = ()=> {
-                if (!instance.user.isAuthorized) {
-                    throw  new Errors(401)
-                }
-
-                if (!instance.user.permissions.includes('read.me') && !instance.user.permissions.includes('all')) {
-                    throw  new Errors(403)
-                }
-            };
-
-            return;
-        }
-    }
-
-};
-```
-
-Include code to your server
-
-```javascript
-const {Modules, Server} = require('just-rest');
-
-Modules.defineRequestInterceptor('./interceptors/request/auth.js');
-
-new Server({Modules, port: 3002 });
-```
+### Middleware ###
 
 Use middleware in your module 
 ```javascript
+const {Errors} = require('just-rest');
+
+function user(request, response, match){
+    let instance = this;
+
+    //TODO get data from real database
+
+    instance.user = {
+        username: 'Guest',
+        permissions: [],
+        isAuthorized: false
+    };
+
+    let testDatabase = {
+        'token1': {
+            username: 'Boris',
+            permissions: ['all'],
+            isAuthorized: true
+        },
+        'token2': {
+            username: 'User 2',
+            permissions: ['read.me'],
+            isAuthorized: true
+        },
+        'token3': {
+            username: 'User 3',
+            permissions: ['read.something'],
+            isAuthorized: true
+        },
+    }
+
+    if (request.headers.token && testDatabase.hasOwnProperty(request.headers.token)) {
+        instance.user = testDatabase[request.headers.token];
+    }
+
+    return;
+}
+
+function isAuthorized() {
+    if (!this.user.isAuthorized) {
+        throw  new Errors(401)
+    }
+    return;
+}
+
+function readPermission() {
+    if (!this.user.permissions.includes('read.me') && !this.user.permissions.includes('all')) {
+        throw  new Errors(403)
+    }
+    return;
+}
+
+function controller(request, response, matched) {
+    response.resp(this.user);
+}
+
 module.exports = {
     GET: {
-        '/profile/me': function (request, response) {
-            /*
-                Using middleware.               
-            */
-            this.checkAuth();
-
-            response.resp(this.user);
-        }
+        //use http://localhost:3002/profile/me
+        '/profile/me': [
+            user, // Using middleware. add user variable to instance
+            isAuthorized, // Using middleware. check authorize
+            readPermission, // Using middleware. check read permissions
+            controller
+        ]
     }
 };
+
 ```
 
 ### Set url path ###

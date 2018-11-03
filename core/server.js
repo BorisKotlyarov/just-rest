@@ -1,5 +1,6 @@
 let http = require('http');
 const URL = require('url');
+const takeTurns = require('./utils/takeTurns');
 const setRequest = require('./request');
 const setResponse = require('./response');
 
@@ -57,7 +58,18 @@ class Server {
 
         if (hasRoute) {
             try {
-                this.Modules.router[request.method][findRoute].call(this, request, response, matched)
+                let module = this.Modules.router[request.method][findRoute];
+                if (Array.isArray(module)) {
+                    return takeTurns({
+                        turn: module,
+                        args: [request, response, matched],
+                        instance: this
+                    }).catch((error)=>{
+                        response.error(error.statusCode || 500, error.message);
+                    });
+                } else {
+                    module.call(this, request, response, matched);
+                }
             } catch (error) {
                 response.error(error.statusCode || 500, error.message);
             }
@@ -66,7 +78,6 @@ class Server {
                 response.error(404, 'Not Found');
             }).resume();
         }
-
     }
 
     listen() {

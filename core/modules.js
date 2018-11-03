@@ -20,7 +20,6 @@ class Modules {
             this[property.variableName] = JSON.parse(JSON.stringify(defaultValues));
 
             this[property.defineFunctionName] = (mod) => {
-
                 let module = {};
                 switch (typeof mod) {
                     case 'object':
@@ -31,15 +30,14 @@ class Modules {
                         module = require.main.require(mod);
                 }
 
-                Object.keys(this[property.variableName]).forEach((key) => {
-                    if (module.hasOwnProperty(key)) {
-                        this[property.variableName][key] = Object.assign(this[property.variableName][key], module[key]);
+                for (let key in this[property.variableName]) {
+                    if (!module.hasOwnProperty(key) && !module.hasOwnProperty('ANY')) {
+                        continue;
                     }
-                    if (module.hasOwnProperty('ANY')) {
-                        this[property.variableName][key] = Object.assign(this[property.variableName][key], module['ANY']);
-                    }
-                });
+                    this[property.variableName][key] = Object.assign(this[property.variableName][key], module[key] || module['ANY']);
+                }
             }
+
         });
 
     }
