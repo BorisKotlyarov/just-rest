@@ -1,3 +1,5 @@
+const {METHODS} = require('http');
+
 class Modules {
 
     constructor() {
@@ -8,18 +10,11 @@ class Modules {
             {variableName: 'responseInterceptors', defineFunctionName: 'defineResponseInterceptor'},
         ];
 
-        let defaultValues = {
-            GET: {},
-            POST: {},
-            PUT: {},
-            DELETE: {},
-            OPTIONS: {}
-        };
 
         this.middlewares = [];
 
         defaultProperties.forEach((property) => {
-            this[property.variableName] = JSON.parse(JSON.stringify(defaultValues));
+            this[property.variableName] = this.defaultValues;
 
             this[property.defineFunctionName] = (mod) => {
                 let module = {};
@@ -41,7 +36,15 @@ class Modules {
             }
 
         });
+    }
 
+    get defaultValues() {
+        let defaultValues = {};
+
+        METHODS.forEach((method) => {
+            defaultValues[method] = {};
+        });
+        return defaultValues;
     }
 
     defineGlobalMiddleware(middleware) {
