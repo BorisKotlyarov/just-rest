@@ -17,7 +17,7 @@
 ## Install ##
 
 ```bash 
-npm i just-rest
+npm i just-rest --save
 ```
 
 ## Use ##
@@ -51,7 +51,7 @@ npm i just-rest
      
         POST: {
             '/process-info': async function(request, response){
-                let body = await request.body;
+                let body = request.body;
                 response.resp(body);
             }
         }, 
@@ -82,9 +82,11 @@ npm i just-rest
 
 2) Connect modules and interceptors to your app
     ```javascript
-    const {Modules, Server} = require('just-rest');
+    const {Modules, Server, Middlewares} = require('just-rest');
     
     Modules.defineResponseInterceptor('./interceptors/response/corsAllowHeaders.js');
+    Modules.defineGlobalMiddleware(Middlewares.bodyJson); // body parser
+ 
     Modules.define('./modules/process-info/index.js');
     
     new Server({Modules, port: 3002});

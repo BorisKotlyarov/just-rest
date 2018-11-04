@@ -2,23 +2,20 @@ function takeTurns({turn = [], args = [], instance}) {
     let index = 0;
     let response = [];
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
 
-        let process = function () {
+        let process = async function () {
 
             if (index < turn.length) {
-                let doing = turn[index++].call(instance, ...args);
+                try {
+                    let doing = await turn[index++].call(instance, ...args);
 
-                if (!doing || typeof doing.then !== 'function') {
-                    doing = Promise.resolve(doing);
+                    response.push(doing);
+
+                    process();
+                } catch (error) {
+                    reject(error);
                 }
-
-                return doing.then((_response) => {
-                    if (_response) {
-                        response.push(_response);
-                    }
-                    return _response;
-                }).then(process);
 
             } else {
                 resolve(response);
@@ -26,6 +23,7 @@ function takeTurns({turn = [], args = [], instance}) {
         }
 
         process();
+
     });
 }
 

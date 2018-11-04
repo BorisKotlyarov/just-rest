@@ -16,6 +16,8 @@ class Modules {
             OPTIONS: {}
         };
 
+        this.middlewares = [];
+
         defaultProperties.forEach((property) => {
             this[property.variableName] = JSON.parse(JSON.stringify(defaultValues));
 
@@ -39,6 +41,19 @@ class Modules {
             }
 
         });
+
+    }
+
+    defineGlobalMiddleware(middleware) {
+
+        switch (typeof middleware) {
+            case 'function':
+                this.middlewares.push(middleware);
+                break;
+
+            default:
+                this.middlewares.push(require.main.require(middleware));
+        }
 
     }
 

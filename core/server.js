@@ -58,18 +58,21 @@ class Server {
 
         if (hasRoute) {
             try {
-                let module = this.Modules.router[request.method][findRoute];
-                if (Array.isArray(module)) {
-                    return takeTurns({
-                        turn: module,
-                        args: [request, response, matched],
-                        instance: this
-                    }).catch((error)=>{
-                        response.error(error.statusCode || 500, error.message);
-                    });
+                let turn = [];
+                if (Array.isArray(this.Modules.router[request.method][findRoute])) {
+                    turn = this.Modules.middlewares.concat(this.Modules.router[request.method][findRoute]);
                 } else {
-                    module.call(this, request, response, matched);
+                    turn = [...this.Modules.middlewares, this.Modules.router[request.method][findRoute]];
                 }
+
+                return takeTurns({
+                    turn,
+                    args: [request, response, matched],
+                    instance: this
+                }).catch((error) => {
+                    response.error(error.statusCode || 500, error.message);
+                });
+
             } catch (error) {
                 response.error(error.statusCode || 500, error.message);
             }
