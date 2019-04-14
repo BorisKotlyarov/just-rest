@@ -8,7 +8,6 @@ const requestPrototype = {
     }
 };
 
-
 module.exports = function (instance, request, response, matched) {
     Object.getOwnPropertyNames(requestPrototype).forEach(function (propertyName) {
         Object.defineProperty(request.__proto__, propertyName, Object.getOwnPropertyDescriptor(requestPrototype, propertyName));

@@ -63,7 +63,7 @@ npm i just-rest --save
     ```javascript
     module.exports = {
         ANY: { //All supported methods «GET, POST, PUT, DELETE, OPTIONS»
-            '(.+?)': function(response){
+            '(.+?)': function(request, response){
     
                 const CorsAllowHeaders = {
                     'Access-Control-Allow-Origin': '*',

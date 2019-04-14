@@ -10,7 +10,6 @@ class Modules {
             {variableName: 'responseInterceptors', defineFunctionName: 'defineResponseInterceptor'},
         ];
 
-
         this.middlewares = [];
 
         defaultProperties.forEach((property) => {
