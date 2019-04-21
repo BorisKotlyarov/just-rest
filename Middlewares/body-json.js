@@ -5,6 +5,11 @@ module.exports = function (request, response, match) {
     return new Promise((resolve, reject) => {
         let body = [];
 
+        if(request.headers['content-type']!='application/json'){
+            resolve()
+            return;
+        }
+
         request.on('error', error => {
             reject(error);
         });
@@ -20,19 +25,11 @@ module.exports = function (request, response, match) {
                 resolve(this.body);
             }
 
-            switch (request.headers['content-type']) {
-
-                case "application/json":
-                    try {
-                        request.body = JSON.parse(request.body)
-                        resolve(request.body);
-                    } catch (error) {
-                        reject(new Errors(400, `JSON syntax error`))
-                    }
-                    break;
-
-                default:
-                    resolve(request.body);
+            try {
+                request.body = JSON.parse(request.body)
+                resolve(request.body);
+            } catch (error) {
+                reject(new Errors(400, `JSON syntax error`))
             }
 
         });
