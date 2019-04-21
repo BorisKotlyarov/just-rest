@@ -32,7 +32,7 @@ module.exports = function (request, response, match) {
                     break;
 
                 default:
-                    reject(new Errors(400, `Incorrect request. Content-type 'application/json' expected.`));
+                    resolve(request.body);
             }
 
         });

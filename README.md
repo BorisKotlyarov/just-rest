@@ -61,22 +61,33 @@ npm i just-rest --save
 
 2) Make interceptor
     ```javascript
+    function defineHeaders(request, response) {
+        const CorsAllowHeaders = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Set-Cookies, Access-Token'
+        };
+    
+        Object.keys(CorsAllowHeaders).forEach((item) => {
+            response.setHeader(item, CorsAllowHeaders[item]);
+        });
+    }
+    
     module.exports = {
         ANY: { //All supported methods «GET, POST, PUT, DELETE, OPTIONS»
-            '(.+?)': function(request, response){
-    
-                const CorsAllowHeaders = {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-                    'Access-Control-Allow-Headers': 'Content-Type, Set-Cookies, Access-Token'
-                };
-    
-                Object.keys(CorsAllowHeaders).forEach((item) => {
-                    response.setHeader(item, CorsAllowHeaders[item]);
-                });
+            '(.+?)': function (request, response) {
+                if (!response.finished) {
+                    defineHeaders(request, response);
+                    if (request.method === 'OPTIONS') {
+                        response.statusCode = 200;
+                        response.end('');
+                    }
+                }
+                return
             }
         }
     };
+
     ```
     save interceptor as `./interceptors/response/corsAllowHeaders.js`
 
