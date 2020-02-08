@@ -4,7 +4,34 @@ const requestPrototype = {
     get query() {
         let url = require('url');
         let url_parts = url.parse(this.url, true);
-        return url_parts.query
+
+        const {query} = url_parts;
+        const result = {};
+        Object.keys(query).forEach((key) => {
+
+            let regExp = new RegExp('^(.+?)\\[(.+?)?\\]$');
+            let match = key.match(regExp);
+
+            if (match) {
+                let parentKeyName = match[1];
+                let childKeyName = match[2];
+
+                if (childKeyName) {
+                    if (result.hasOwnProperty(parentKeyName)) {
+                        result[parentKeyName] = {...result[parentKeyName], [childKeyName]: query[key]};
+                    } else {
+                        result[parentKeyName] = {[childKeyName]: query[key]};
+                    }
+                    return
+                } else {
+                    result[parentKeyName] = query[key];
+                    return
+                }
+            }
+            result[key] = query[key];
+        });
+
+        return result;
     }
 };
 
