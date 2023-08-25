@@ -9,6 +9,7 @@ module.exports = function (instance, request, response, matched) {
             args: [request, response, matched, data],
             instance
         }).then(() => {
+            if(response.finished) return;
             return response.end(JSON.stringify(data));
         });
 
